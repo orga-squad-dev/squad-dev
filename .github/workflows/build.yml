@@ -21,6 +21,11 @@ jobs:
       # From now you can access the version
       - name: Print version
         run: echo ${{ steps.extract_version.outputs.version }}
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       
       - name: Bump release version
         id: bump_version
@@ -29,7 +34,7 @@ jobs:
           current-version: ${{ steps.extract_version.outputs.version }}
           version-fragment: 'feature'
       - name: Do something with your bumped release version
-        run: echo ${{ steps.bump_version.outputs.next-version }}
+        run: echo ${{ steps.bump_version.outputs.next-version }} on ${{ steps.extract_branch.outputs.branch }}
         
   QG:
     name: SonarCloud
@@ -40,9 +45,7 @@ jobs:
           # Shallow clones should be disabled for a better relevancy of analysis
           fetch-depth: 0
       - name: List files
-        run: |
-          ll
-          echo $(ls -lah)
+        run: echo $(ls -lah)
       - name: Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
