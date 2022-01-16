@@ -18,6 +18,11 @@ jobs:
           fetch-depth: 0
       - name: Scan
         uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: ./src/
+          args: >
+            -Dsonar.organization=orga-squad-dev
+            -Dsonar.projectKey=orga-squad-dev_squad-dev 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # SonarCloud access token should be generated from https://sonarcloud.io/account/security/
