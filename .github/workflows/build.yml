@@ -24,13 +24,13 @@ jobs:
       - name: Print version
         run: echo ${{ steps.extract_version.outputs.version }}
 
-      - name: echo branch name
-        run: echo ${GITHUB_REF#refs/heads/}
-
       - name: Extract branch name
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
+
+      - name: echo branch name
+        run: echo ${GITHUB_REF#refs/heads/} - contains(steps.extract_branch.outputs.branch, 'main')
 
       #- name: feature name
       #  #if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
@@ -44,10 +44,12 @@ jobs:
       #  id: feature_name
 
       - name: feature name
+        id: feature_name
         if: contains(steps.extract_branch.outputs.branch, 'features/')
         run: |
           echo "##[set-output name=feature;]$(echo bug)"
       - name: feature name
+        id: feature_name
         if: contains(steps.extract_branch.outputs.branch, 'main')
         run: |
           echo "##[set-output name=feature;]$(echo feature)"  
