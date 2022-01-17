@@ -29,16 +29,25 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
 
+      #- name: feature name
+      #  #if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
+      #  run: |
+      #    if [[ contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) ]]; then
+      #      echo "##[set-output name=feature;]$(echo bug)"
+      #    fi
+      #    if [[ "${steps.extract_branch.outputs.branch}" == "main"]]; then
+      #      echo "##[set-output name=feature;]$(echo feature)"
+      #    fi
+      #  id: feature_name
+
       - name: feature name
-        #if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
+        if: contains(steps.extract_branch.outputs.branch, 'features/')
         run: |
-          if [[ contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) ]]; then
-            echo "##[set-output name=feature;]$(echo bug)"
-          fi
-          if [[ "${steps.extract_branch.outputs.branch}" == "main"]]; then
-            echo "##[set-output name=feature;]$(echo feature)"
-          fi
-        id: feature_name
+          echo "##[set-output name=feature;]$(echo bug)"
+      - name: feature name
+        if: contains(steps.extract_branch.outputs.branch, 'main')
+        run: |
+          echo "##[set-output name=feature;]$(echo feature)"  
       
       - name: Bump release version
         id: bump_version
@@ -49,18 +58,19 @@ jobs:
       - name: Do something with your bumped release version
         run: echo ${{ steps.bump_version.outputs.next-version }} on ${{ steps.extract_branch.outputs.branch }}
       
-      - name: Tag name
-        run: |
-          if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
-            echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
-          fi
-          if [[ "${steps.extract_branch.outputs.branch}" == "main"]]; then
-            echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version})"
-          fi
-        id: tag_name
+      #- name: Tag name
+      #  run: |
+      #    if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
+      #      echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
+      #    fi
+      #    if [[ "${steps.extract_branch.outputs.branch}" == "main"]]; then
+      #      echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version})"
+      #    fi
+      #  id: tag_name
 
       - name: Image name
-        run: echo ${{ steps.feature_name.outputs.feature }} - ${{ steps.tag_name.outputs.tag }}
+        #run: echo ${{ steps.feature_name.outputs.feature }} - ${{ steps.tag_name.outputs.tag }}
+        run: echo ${{ steps.feature_name.outputs.feature }}
         
   QG:
     name: SonarCloud
