@@ -49,7 +49,7 @@ jobs:
       #    echo "##[set-output name=feature;]$(echo bug)"
       - name: feature name
         id: feature_name
-        if: ${{ contains(steps.extract_branch.outputs.branch, 'main') == "true"}}
+        if: ${{ contains(steps.extract_branch.outputs.branch, 'main') }}
         run: |
           echo "##[set-output name=feature;]$(echo feature)"  
       
