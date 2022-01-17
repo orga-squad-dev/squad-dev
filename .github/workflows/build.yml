@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - develop
+      - 'features/**'
   workflow_dispatch:
     inputs:
       existVersion:
@@ -30,7 +32,9 @@ jobs:
         id: extract_branch
 
       - name: echo branch name
-        run: echo ${GITHUB_REF#refs/heads/} - contains(steps.extract_branch.outputs.branch, 'main')
+        run: |
+          echo ${GITHUB_REF#refs/heads/} 
+          echo contains(steps.extract_branch.outputs.branch, 'main')
 
       #- name: feature name
       #  #if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
@@ -79,6 +83,7 @@ jobs:
         
   QG:
     name: SonarCloud
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
