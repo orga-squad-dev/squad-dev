@@ -46,11 +46,9 @@ jobs:
       
       - name: Tag name
         if: contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )
-          shell: bash
-          run: echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
+        run: echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
         if: steps.extract_branch.outputs.branch == 'main'
-          shell: bash
-          run: echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version})"
+        run: echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version})"
         id: tag_name
 
       - name: Image name
