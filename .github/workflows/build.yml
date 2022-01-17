@@ -24,6 +24,9 @@ jobs:
       - name: Print version
         run: echo ${{ steps.extract_version.outputs.version }}
 
+      - name: echo branch name
+        run: echo ${GITHUB_REF#refs/heads/}
+
       - name: Extract branch name
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
