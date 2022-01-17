@@ -56,6 +56,7 @@ jobs:
 
       - name: Tag name
         run: |
+          echo *** Branch name *** : ${{ env.branch_name }}
           if [[ ${{ env.branch_name }} =~ "feature/" || ${{ env.branch_name }} =~ "develop" ]]; then
             echo "::set-output name=tag::${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}"
           fi
