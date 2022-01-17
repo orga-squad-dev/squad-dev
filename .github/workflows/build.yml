@@ -30,16 +30,16 @@ jobs:
         shell: bash
         run: |
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo ${GITHUB_REF#refs/heads/} >> $BRANCH
+          echo ${GITHUB_REF#refs/heads/} >> $BRANCH_TOTO
         id: extract_branch
 
       - name: feature name
         run: |
-          if [[ $BRANCH =~ "feature/" ]]; then
-            echo "##[set-output name=feature;]$(echo bug)"
+          if [[ $BRANCH_TOTO =~ "feature/" ]]; then
+            echo "::set-output name=feature::bug"
           fi
-          if [[ $BRANCH == "main" ]]; then
-            echo "##[set-output name=feature;]$(echo feature)"
+          if [[ $BRANCH_TOTO == "main" ]]; then
+            echo "::set-output name=feature::feature"
           fi
         id: feature_name
 
