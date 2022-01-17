@@ -34,7 +34,7 @@ jobs:
       - name: echo branch name
         run: |
           echo ${GITHUB_REF#refs/heads/} 
-          echo contains(steps.extract_branch.outputs.branch, 'main')
+          echo ${contains(steps.extract_branch.outputs.branch, 'main')}
 
       #- name: feature name
       #  #if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
