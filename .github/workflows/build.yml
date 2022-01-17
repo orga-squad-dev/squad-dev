@@ -60,8 +60,8 @@ jobs:
             echo "::set-output name=tag::${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}"
           fi
           if [[ ${{ env.branch_name }} == "main" ]]; then
-            echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version})"
-            
+            echo *** Tag name ***
+            echo "::set-output name=tag::${steps.extract_version.outputs.version}"
           fi
         id: tag_name
 
