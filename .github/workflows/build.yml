@@ -26,6 +26,15 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
+
+      - name: feature name
+        if: contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )
+          shell: bash
+          run: echo "##[set-output name=feature;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
+        if: steps.extract_branch.outputs.branch == 'main'
+          shell: bash
+          run: echo "##[set-output name=feature;]$(echo ${steps.extract_version.outputs.version})"
+        id: feature_name
       
       - name: Bump release version
         id: bump_version
@@ -35,6 +44,18 @@ jobs:
           version-fragment: 'feature'
       - name: Do something with your bumped release version
         run: echo ${{ steps.bump_version.outputs.next-version }} on ${{ steps.extract_branch.outputs.branch }}
+      
+      - name: Tag name
+        if: contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )
+          shell: bash
+          run: echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
+        if: steps.extract_branch.outputs.branch == 'main'
+          shell: bash
+          run: echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version})"
+        id: tag_name
+
+      - name: Image name
+        run: echo ${{ steps.feature_name.outputs.feature }} - ${{ steps.tag_name.outputs.tag }}
         
   QG:
     name: SonarCloud
