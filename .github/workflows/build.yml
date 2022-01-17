@@ -12,13 +12,72 @@ on:
         description: 'Existing version to deploy'
 
 jobs:
-  build:
-    name: Create Build
+
+  checkout:
+    name: Get sources
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: sources
+          path: ./
+    
+  build:
+    name: Create build
+    needs: checkout
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: sources
+          path: ./
+      
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - run: npm install
+      - run: npm test
+        
+  QG:
+    name: SonarCloud
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
+      - name: List files
+        run: ls -lah
+      - name: Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: ./src/
+          args: >
+            -Dsonar.organization=orga-squad-dev
+            -Dsonar.projectKey=orga-squad-dev_squad-dev 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # SonarCloud access token should be generated from https://sonarcloud.io/account/security/
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  version:
+    name: Bump version
+    needs: QG
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: sources
+          path: ./
+      
       - name: Extract version
         id: extract_version
         uses: Saionaro/extract-package-version@v1.0.6
@@ -54,52 +113,29 @@ jobs:
       - name: Do something with your bumped release version
         run: echo ${{ steps.bump_version.outputs.next-version }} on ${{ steps.extract_branch.outputs.branch }}
 
-      - name: Tag name
+      - name: Image name
         run: |
           echo *** Branch name *** : ${{ env.branch_name }} / ${{steps.extract_version.outputs.version}}
           if [[ ${{ env.branch_name }} =~ "feature/" || ${{ env.branch_name }} =~ "develop" ]]; then
             echo "::set-output name=tag::${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}"
           fi
           if [[ ${{ env.branch_name }} == "main" ]]; then
-            echo *** Tag name ***
             echo "::set-output name=tag::${{steps.extract_version.outputs.version}}"
           fi
-        id: tag_name
+        id: image_name
 
-        #echo "::set-output name=tag::feature"
-      
-      #- name: Tag name
-      #  run: |
-      #    if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
-      #      echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
-      #    fi
-      #    if [[ "${steps.extract_branch.outputs.branch}" == "main"]]; then
-      #      echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version})"
-      #    fi
-      #  id: tag_name
+      #- name: Image name
+      #  run: echo ${{ steps.feature_name.outputs.feature }} - ${{ steps.tag_name.outputs.tag }}
 
-      - name: Image name
-        run: echo ${{ steps.feature_name.outputs.feature }} - ${{ steps.tag_name.outputs.tag }}
-        
-  QG:
-    name: SonarCloud
-    needs: build
+  build-image:
+    name: Build docker image
+    needs: version
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
         with:
-          # Shallow clones should be disabled for a better relevancy of analysis
-          fetch-depth: 0
-      - name: List files
-        run: ls -lah
-      - name: Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: ./src/
-          args: >
-            -Dsonar.organization=orga-squad-dev
-            -Dsonar.projectKey=orga-squad-dev_squad-dev 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # SonarCloud access token should be generated from https://sonarcloud.io/account/security/
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          name: sources
+          path: ./
+
+    
