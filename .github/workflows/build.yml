@@ -30,15 +30,15 @@ jobs:
         shell: bash
         run: |
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo ${GITHUB_REF#refs/heads/} >> $BRANCH_TOTO
+          echo "action_state=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
         id: extract_branch
 
       - name: feature name
         run: |
-          if [[ $BRANCH_TOTO =~ "feature/" ]]; then
+          if [[ env.action_state =~ "feature/" ]]; then
             echo "::set-output name=feature::bug"
           fi
-          if [[ $BRANCH_TOTO == "main" ]]; then
+          if [[ env.action_state == "main" ]]; then
             echo "::set-output name=feature::feature"
           fi
         id: feature_name
