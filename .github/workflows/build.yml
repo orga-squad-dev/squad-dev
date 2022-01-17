@@ -29,11 +29,10 @@ jobs:
 
       - name: feature name
         if: contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )
-          shell: bash
-          run: echo "##[set-output name=feature;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
+        shell: bash
+        run: echo "##[set-output name=feature;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
         if: steps.extract_branch.outputs.branch == 'main'
-          shell: bash
-          run: echo "##[set-output name=feature;]$(echo ${steps.extract_version.outputs.version})"
+        run: echo "##[set-output name=feature;]$(echo ${steps.extract_version.outputs.version})"
         id: feature_name
       
       - name: Bump release version
@@ -66,7 +65,7 @@ jobs:
           # Shallow clones should be disabled for a better relevancy of analysis
           fetch-depth: 0
       - name: List files
-        run: echo $(ls -lah)
+        run: ls -lah
       - name: Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
