@@ -29,53 +29,43 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "action_state=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
         id: extract_branch
 
-      - name: Test action_state
-        run: echo ${{ env.action_state }}
+      - name: Test branch_name
+        run: echo ${{ env.branch_name }}
 
-      - name: feature name
+      - name: Feature name
         run: |
-          if [[ ${{ env.action_state }} =~ "feature/" ]]; then
+          if [[ ${{ env.branch_name }} =~ "feature/" ]]; then
             echo "::set-output name=feature::bug"
           fi
-          if [[ ${{ env.action_state }} == "main" ]]; then
+          if [[ ${{ env.branch_name }} == "main" ]]; then
             echo "::set-output name=feature::feature"
           fi
         id: feature_name
 
-      #- name: feature name
-      #  #if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
-      #  run: |
-      #    if [[ contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) ]]; then
-      #      echo "##[set-output name=feature;]$(echo bug)"
-      #    fi
-      #    if [[ "${steps.extract_branch.outputs.branch}" == "main"]]; then
-      #      echo "##[set-output name=feature;]$(echo feature)"
-      #    fi
-      #  id: feature_name
-
-      #- name: feature name
-      #  id: feature_name
-      #  if: contains(steps.extract_branch.outputs.branch, 'features/')
-      #  run: |
-      #    echo "##[set-output name=feature;]$(echo bug)"
-      #- name: feature name
-      #  id: feature_name
-      #  if: ${{ contains(steps.extract_branch.outputs.branch, 'main') }}
-      #  run: |
-      #    echo "##[set-output name=feature;]$(echo feature)"  
-      
       - name: Bump release version
         id: bump_version
         uses: christian-draeger/increment-semantic-version@1.0.2
         with:
           current-version: ${{ steps.extract_version.outputs.version }}
-          version-fragment: 'feature'
+          version-fragment: ${{ steps.feature_name.outputs.feature }}
       - name: Do something with your bumped release version
         run: echo ${{ steps.bump_version.outputs.next-version }} on ${{ steps.extract_branch.outputs.branch }}
+
+      - name: Tag name
+        run: |
+          if [[ ${{ env.branch_name }} =~ "feature/" || ${{ env.branch_name }} =~ "develop" ]]; then
+            echo "::set-output name=tag::${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}"
+          fi
+          if [[ ${{ env.branch_name }} == "main" ]]; then
+            echo "##[set-output name=tag;]$(echo ${steps.extract_version.outputs.version})"
+            
+          fi
+        id: tag_name
+
+        #echo "::set-output name=tag::feature"
       
       #- name: Tag name
       #  run: |
