@@ -38,10 +38,10 @@ jobs:
 
       - name: feature name
         run: |
-          if [[ env.action_state =~ "feature/" ]]; then
+          if [[ ${{ env.action_state }} =~ "feature/" ]]; then
             echo "::set-output name=feature::bug"
           fi
-          if [[ env.action_state == "main" ]]; then
+          if [[ ${{ env.action_state }} == "main" ]]; then
             echo "::set-output name=feature::feature"
           fi
         id: feature_name
