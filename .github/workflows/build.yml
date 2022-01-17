@@ -33,6 +33,9 @@ jobs:
           echo "action_state=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
         id: extract_branch
 
+      - name: Test action_state
+        run: echo ${{ env.action_state }}
+
       - name: feature name
         run: |
           if [[ env.action_state =~ "feature/" ]]; then
