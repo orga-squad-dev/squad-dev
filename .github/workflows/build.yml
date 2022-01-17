@@ -1,11 +1,13 @@
 name: Build
 
 on:
-  # Trigger analysis when pushing in master or pull requests, and when creating
-  # a pull request.
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      existVersion:
+        description: 'Existing version to deploy'
 
 jobs:
   build:
@@ -28,11 +30,13 @@ jobs:
         id: extract_branch
 
       - name: feature name
-        if: contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )
-        shell: bash
-        run: echo "##[set-output name=feature;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
-        if: steps.extract_branch.outputs.branch == 'main'
-        run: echo "##[set-output name=feature;]$(echo ${steps.extract_version.outputs.version})"
+        run: |
+          if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
+            echo "##[set-output name=feature;]$(echo ${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch})"
+          fi
+          if [[ "${steps.extract_branch.outputs.branch}" == "main"]]; then
+            echo "##[set-output name=feature;]$(echo ${steps.extract_version.outputs.version})"
+          fi
         id: feature_name
       
       - name: Bump release version
