@@ -43,11 +43,11 @@ jobs:
       #    fi
       #  id: feature_name
 
-      - name: feature name
-        id: feature_name
-        if: contains(steps.extract_branch.outputs.branch, 'features/')
-        run: |
-          echo "##[set-output name=feature;]$(echo bug)"
+      #- name: feature name
+      #  id: feature_name
+      #  if: contains(steps.extract_branch.outputs.branch, 'features/')
+      #  run: |
+      #    echo "##[set-output name=feature;]$(echo bug)"
       - name: feature name
         id: feature_name
         if: contains(steps.extract_branch.outputs.branch, 'main')
