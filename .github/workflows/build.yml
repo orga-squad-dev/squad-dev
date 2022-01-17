@@ -30,8 +30,9 @@ jobs:
         id: extract_branch
 
       - name: feature name
+        #if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
         run: |
-          if [[ "contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) || contains( ${{steps.extract_branch.outputs.branch}}, 'develop/' )" ]]; then
+          if [[ contains( ${{steps.extract_branch.outputs.branch}}, 'features/' ) ]]; then
             echo "##[set-output name=feature;]$(echo bug)"
           fi
           if [[ "${steps.extract_branch.outputs.branch}" == "main"]]; then
