@@ -141,6 +141,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - run: |
+          echo ENV : ${{ env.TAG }}
+
       - uses: actions/download-artifact@v2
         with:
           name: sources
@@ -181,7 +184,6 @@ jobs:
           password: ${{ secrets.PASSWORD_PROD }}
           port: ${{ secrets.PORT_PROD }}
           script: |
-            echo echo ENV : ${{ env.TAG }}
             echo Login
             echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
