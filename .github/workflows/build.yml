@@ -218,7 +218,7 @@ jobs:
         password: ${{ secrets.PASSWORD_PROD }}
         port: ${{ secrets.PORT_PROD }}
         script: |
-          ll
+          ls -lah
         #script: |
         #  IMAGE_ID=ghcr.io/${{ github.repository_owner }}/squaddev
 #
