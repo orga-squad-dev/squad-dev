@@ -177,7 +177,7 @@ jobs:
 
   deploy-R7:
     if: contains(github.ref, 'develop')
-    uses: orga-squad-dev/squad-dev/.github/workflows/wfl_call.yml@main
+    uses: ./.github/workflows/wfl_call.yml@main
     with:
       image_name: squaddev
       image_tag: latest
@@ -192,7 +192,7 @@ jobs:
 
   deploy-prod:
     if: ${{ github.ref == 'refs/heads/main' }} || ${{contains(github.base_ref, 'main')}}
-    uses: orga-squad-dev/squad-dev/.github/workflows/wfl_call.yml@main
+    uses: ./.github/workflows/wfl_call.yml@main
     with:
       image_name: squaddev
       image_tag: latest
