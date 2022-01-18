@@ -28,12 +28,17 @@ on:
         required: true
 
 jobs:
+
+  init:
+    name: Sub wfl
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo sub wfl
+
   prod:
     name: ${{ inputs.server_name }}
     runs-on: ubuntu-latest
     steps:
-
-      - run: echo sub wfl
 
       - name: SSH on ${{ inputs.server_name }}
         uses: appleboy/ssh-action@master
