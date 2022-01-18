@@ -128,9 +128,9 @@ jobs:
             #echo "::set-output name=tag::${{steps.extract_version.outputs.version}}"
             echo "TAG=${{steps.extract_version.outputs.version}}" >> $GITHUB_ENV
           fi
+          echo TAG : "TAG=${{steps.extract_version.outputs.version}}"
           echo ENV : ${{ env.TAG }}
           echo version 1 : ${{steps.extract_version.outputs.version}}
-          echo version 2 : ${steps.extract_version.outputs.version}
         id: image_name
 
       #- name: Image name
