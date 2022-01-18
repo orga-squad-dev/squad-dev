@@ -207,7 +207,7 @@ jobs:
     name: PROD
     needs: build-image
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' }} || ${{contains(github.base_ref, 'main')}}
     steps:
       - name: SSH on PROD
         uses: appleboy/ssh-action@master
