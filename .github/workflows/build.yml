@@ -33,6 +33,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - uses: actions/download-artifact@v2
+        with:
+          name: sources
+          path: ./
+
       - name: Setup node
         uses: actions/setup-node@v2
         with:
@@ -45,7 +50,7 @@ jobs:
       - name: List files
         run: ls -lah
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/upload-artifact@v2
         with:
           name: sources
           path: ./
