@@ -172,7 +172,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: executing remote ssh commands using password
+      - name: SSH on PROD
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_PROD }}
@@ -184,13 +184,13 @@ jobs:
             echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
             echo Delete image
-            docker rmi -f squaddev
+            docker rmi -f jetenow/squaddev
 
             echo Pull image
             docker pull jetenow/squaddev:latest
 
             echo Run new one
-            docker run -p 3000:80 squaddev jetenow/squaddev:latest
+            docker run -p 3000:80 --name squaddev jetenow/squaddev:latest
 
 
 
