@@ -226,9 +226,14 @@ jobs:
           password: ${{ secrets.PASSWORD_PROD }}
           port: ${{ secrets.PORT_PROD }}
           script: |
+            echo Delete image
+            #docker rmi -f squaddev
+
             echo Pull image
             docker pull jetenow/squaddev:latest
-            docker run -p 3000:80 jetenow/squaddev:latest
+
+            echo Run new one
+            docker run -p 3000:80 squaddev jetenow/squaddev:latest
 
         #script: |
         #  IMAGE_ID=ghcr.io/${{ github.repository_owner }}/squaddev
