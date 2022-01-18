@@ -186,19 +186,19 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      #- name: Set up Docker Buildx
+      #  uses: docker/setup-buildx-action@v1
       
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
-          tags: jetenow/squaddev:${{ env.tag }}
+          tags: jetenow/squaddev:latest
 
   prod:
     name: PROD
-    needs: build-image
+    needs: [build-image, version]
     runs-on: ubuntu-latest
     steps:
     - name: executing remote ssh commands using password
