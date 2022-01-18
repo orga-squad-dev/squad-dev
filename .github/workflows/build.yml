@@ -161,8 +161,11 @@ jobs:
           name: sources
           path: ./
 
+      - name: List files
+        run: ls -lah
+        
       - run: |
-          TAG = $(cat MY_ENV_FILE.txt)
+          echo $(cat MY_ENV_FILE.txt) > TAG
           echo TAG: $TAG
           echo "TAG=$TAG" >> $GITHUB_ENV
 
@@ -171,9 +174,6 @@ jobs:
       #    npm install
       #    npm run build
       
-      - name: List files
-        run: ls -lah
-
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
