@@ -45,7 +45,7 @@ jobs:
 
       - run: npm install
       - run: npm test
-      - run: npm run build
+      #- run: npm run build
 
 
       - name: List files
@@ -145,6 +145,7 @@ jobs:
           name: sources
           path: ./
 
+      - run: npm run build
       
       - name: List files
         run: ls -lah
