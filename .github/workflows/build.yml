@@ -10,6 +10,8 @@ on:
     inputs:
       existVersion:
         description: 'Existing version to deploy'
+env:
+  TAG: ""
 
 jobs:
 
@@ -128,8 +130,9 @@ jobs:
             #echo "::set-output name=tag::${{steps.extract_version.outputs.version}}"
             echo "tag=${{steps.extract_version.outputs.version}}" >> $GITHUB_ENV
           fi
+          echo ${{steps.extract_version.outputs.version}} >> $env.TAG
           echo TAG : "TAG=${{steps.extract_version.outputs.version}}"
-          echo ENV : ${{ env.tag }}
+          echo ENV : ${{ env.TAG }}
           echo version 1 : ${{steps.extract_version.outputs.version}}
         id: image_name
 
