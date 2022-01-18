@@ -149,8 +149,9 @@ jobs:
     steps:
 
       - run: |
+          TAG = ""
           echo MY_ENV_FILE
-          cat MY_ENV_FILE.txt > TAG
+          cat MY_ENV_FILE.txt > $TAG
           echo TAG: $TAG
           echo "TAG=${{$TAG}}" >> $GITHUB_ENV
 
@@ -187,6 +188,7 @@ jobs:
     steps:
 
       - run: |
+          TAG = ""
           echo MY_ENV_FILE
           cat MY_ENV_FILE.txt > TAG
           echo TAG: $TAG
