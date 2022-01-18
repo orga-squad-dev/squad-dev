@@ -51,29 +51,29 @@ jobs:
       - name: List files
         run: ls -lah
         
-  QG:
-    name: SonarCloud
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # Shallow clones should be disabled for a better relevancy of analysis
-          fetch-depth: 0
-      - name: Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: ./src/
-          args: >
-            -Dsonar.organization=orga-squad-dev
-            -Dsonar.projectKey=orga-squad-dev_squad-dev 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #QG:
+  #  name: SonarCloud
+  #  needs: build
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #      with:
+  #        # Shallow clones should be disabled for a better relevancy of analysis
+  #        fetch-depth: 0
+  #    - name: Scan
+  #      uses: SonarSource/sonarcloud-github-action@master
+  #      with:
+  #        projectBaseDir: ./src/
+  #        args: >
+  #          -Dsonar.organization=orga-squad-dev
+  #          -Dsonar.projectKey=orga-squad-dev_squad-dev 
+  #      env:
+  #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   version:
     name: Bump version
-    needs: QG
+    needs: checkout
     runs-on: ubuntu-latest
     steps:
 
@@ -152,9 +152,6 @@ jobs:
       #    tags: latest, ${{ secrets.DOCKER_TOKEN }}
       #  run: |
       #    docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-#
-      #- name: Docker Push
-      #  run: docker push ${{secrets.DOCKER_USER}}/vampi_docker:latest
 
       #- name: push image to ghcr.io
       #  uses: redhat-actions/push-to-registry@v2
@@ -165,12 +162,12 @@ jobs:
       #    username: ${{ github.actor }}
       #    password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build image
-        #run: docker build -t ghcr.io/${{ github.repository }}/squaddev:${{ env.tag }} .
-        run: docker build -t jetenow/squaddev:${{ env.tag }} .
-
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build image
+        run: docker build -t ghcr.io/${{ github.repository }}/squaddev:${{ env.tag }} .
+        #run: docker build -t jetenow/squaddev:${{ env.tag }} .
 
       - name: Push image
         run: |
