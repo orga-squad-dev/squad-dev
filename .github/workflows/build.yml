@@ -56,7 +56,7 @@ jobs:
           path: |
             ./
             !node_modules/
-            
+
         
   #QG:
   #  name: SonarCloud
@@ -156,15 +156,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - run: |
-          TAG = $(cat MY_ENV_FILE.txt)
-          echo TAG: $TAG
-          echo "TAG=$TAG" >> $GITHUB_ENV
-
       - uses: actions/download-artifact@v2
         with:
           name: sources
           path: ./
+
+      - run: |
+          TAG = $(cat MY_ENV_FILE.txt)
+          echo TAG: $TAG
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       #- name: Rebuild sources
       #  run: |
@@ -192,6 +192,11 @@ jobs:
     needs: build-image
     runs-on: ubuntu-latest
     steps:
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: sources
+          path: ./
 
       - run: |
           TAG = $(cat MY_ENV_FILE.txt)
