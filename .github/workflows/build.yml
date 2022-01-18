@@ -166,7 +166,8 @@ jobs:
 
       - run: |
           cat MY_ENV_FILE.txt
-          echo $(cat MY_ENV_FILE.txt) > TAG
+          #echo $(cat MY_ENV_FILE.txt) > TAG
+          TAG = $(cat MY_ENV_FILE.txt)
           echo TAG: $TAG
           echo "TAG=$TAG" >> $GITHUB_ENV
 
