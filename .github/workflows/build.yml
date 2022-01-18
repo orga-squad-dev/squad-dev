@@ -129,8 +129,8 @@ jobs:
             echo "TAG=${{steps.extract_version.outputs.version}}" >> $GITHUB_ENV
           fi
           echo ENV : ${{ env.TAG }}
-          echo version : ${{steps.extract_version.outputs.version}} / ${steps.extract_version.outputs.version}
-          echo branch : ${steps.extract_branch.outputs.branch}
+          echo version 1 : ${{steps.extract_version.outputs.version}}
+          echo version 2 : ${steps.extract_version.outputs.version}
         id: image_name
 
       #- name: Image name
