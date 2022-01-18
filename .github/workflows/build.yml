@@ -218,12 +218,14 @@ jobs:
         password: ${{ secrets.PASSWORD_PROD }}
         port: ${{ secrets.PORT_PROD }}
         script: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/squaddev
-
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-          docker pull $IMAGE_ID:${{ env.tag }}
-          docker run -p 3000:80 -it $IMAGE_ID:${{ env.tag }}
+          ll
+        #script: |
+        #  IMAGE_ID=ghcr.io/${{ github.repository_owner }}/squaddev
+#
+        #  echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+#
+        #  docker pull $IMAGE_ID:${{ env.tag }}
+        #  docker run -p 3000:80 -it $IMAGE_ID:${{ env.tag }}
 
 
 
