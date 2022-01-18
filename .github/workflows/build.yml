@@ -24,6 +24,8 @@ jobs:
         with:
           name: sources
           path: ./
+
+      - run: echo ${{ github.repository_owner }} - ${{ github.repository }} - ${{ github.project_id }}
     
   build:
     name: Create build
