@@ -164,7 +164,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: jetenow/squaddev:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
 
   prod:
     name: PROD
@@ -187,10 +187,10 @@ jobs:
             docker rm -f $(docker ps -a | grep squaddev | awk '{print $1}')
 
             echo Pull image
-            docker pull jetenow/squaddev:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
 
             echo Run new one
-            docker run -d -p 3000:80 --name squaddev jetenow/squaddev:latest
+            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
 
 
 
