@@ -43,12 +43,9 @@ jobs:
         with:
           node-version: '14'
 
-      - run: |
-           install
-      - run: |
-           test
-      #- run: |
-           run build
+      - run: npm install
+      - run: npm test
+      #- run: npm run build
 
 
       - name: List files
@@ -148,7 +145,8 @@ jobs:
           name: sources
           path: ./
 
-      - run: |
+      - name: Rebuild sources
+        run: |
           npm install
           npm run build
       
