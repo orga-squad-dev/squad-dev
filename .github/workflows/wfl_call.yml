@@ -28,9 +28,15 @@ on:
         required: true
 
 jobs:
+
+  init:
+    name: Sub wfl
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo sub wfl
+
   prod:
     name: ${{ inputs.server_name }}
-    needs: build-image
     runs-on: ubuntu-latest
     steps:
 

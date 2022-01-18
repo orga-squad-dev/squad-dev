@@ -1,12 +1,11 @@
 name: Build
 
-on:
-  push:
-    branches:
-      - main
-      - develop
-
-  workflow_dispatch:
+#on:
+#  push:
+#    branches:
+#      - main
+#      - develop
+#  workflow_dispatch:
 
 jobs:
 
@@ -175,88 +174,86 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:${{ steps.tag_name.outputs.tag }}
 
-  deploy-R7:
-    if: contains(github.ref, 'develop')
-    uses: orga-squad-dev/squad-dev/.github/workflows/wfl_call.yml@main
-    with:
-      image_name: squaddev
-      image_tag: latest
-      server_name: PROD
-    secrets:
-      dockerhub_token: ""
-      dockerhub_username: ""
-      server: ${{ secrets.HOST_R7 }}
-      serveur_user: ${{ secrets.USERNAME_R7 }}
-      serveur_pwd: ${{ secrets.PASSWORD_R7 }}
-      serveur_port: ${{ secrets.PORT_R7 }}
-
-  deploy-prod:
-    if: ${{ github.ref == 'refs/heads/main' }} || ${{contains(github.base_ref, 'main')}}
-    uses: orga-squad-dev/squad-dev/.github/workflows/wfl_call.yml@main
-    with:
-      image_name: squaddev
-      image_tag: latest
-      server_name: PROD
-    secrets:
-      dockerhub_token: ""
-      dockerhub_username: ""
-      server: ${{ secrets.HOST_PROD }}
-      serveur_user: ${{ secrets.USERNAME_PROD }}
-      serveur_pwd: ${{ secrets.PASSWORD_PROD }}
-      serveur_port: ${{ secrets.PORT_PROD }}
-
-
-  #r7:
-  #  name: R7
-  #  needs: build-image
-  #  runs-on: ubuntu-latest
+  #deploy-R7:
   #  if: contains(github.ref, 'develop')
-  #  #if: ${{ github.ref == 'refs/heads/develop' }}
-  #  steps:
-  #    - name: SSH on R7
-  #      uses: appleboy/ssh-action@master
-  #      with:
-  #        host: ${{ secrets.HOST_R7 }}
-  #        username: ${{ secrets.USERNAME_R7 }}
-  #        password: ${{ secrets.PASSWORD_R7 }}
-  #        port: ${{ secrets.PORT_R7 }}
-  #        script: |
-  #          echo Login
-  #          echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+  #  uses: orga-squad-dev/squad-dev/.github/workflows/wfl_call.yml@main
+  #  with:
+  #    image_name: squaddev
+  #    image_tag: latest
+  #    server_name: PROD
+  #  secrets:
+  #    dockerhub_token: ""
+  #    dockerhub_username: ""
+  #    server: ${{ secrets.HOST_R7 }}
+  #    serveur_user: ${{ secrets.USERNAME_R7 }}
+  #    serveur_pwd: ${{ secrets.PASSWORD_R7 }}
+  #    serveur_port: ${{ secrets.PORT_R7 }}
 #
-  #          echo Delete image
-  #          docker rm -f $(docker ps -a | grep squaddev | awk '{print $1}')
-#
-  #          echo Pull image
-  #          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:r7
-#
-  #          echo Run new one
-  #          docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:r7
-#
-#
-  #prod:
-  #  name: PROD
-  #  needs: build-image
-  #  runs-on: ubuntu-latest
+  #deploy-prod:
   #  if: ${{ github.ref == 'refs/heads/main' }} || ${{contains(github.base_ref, 'main')}}
-  #  steps:
-  #    - name: SSH on PROD
-  #      uses: appleboy/ssh-action@master
-  #      with:
-  #        host: ${{ secrets.HOST_PROD }}
-  #        username: ${{ secrets.USERNAME_PROD }}
-  #        password: ${{ secrets.PASSWORD_PROD }}
-  #        port: ${{ secrets.PORT_PROD }}
-  #        script: |
-  #          echo Login
-  #          echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-#
-  #          echo Delete image
-  #          docker rm -f $(docker ps -a | grep squaddev | awk '{print $1}')
-#
-  #          echo Pull image
-  #          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
-#
-  #          echo Run new one
-  #          docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
-#
+  #  uses: orga-squad-dev/squad-dev/.github/workflows/wfl_call.yml@main
+  #  with:
+  #    image_name: squaddev
+  #    image_tag: latest
+  #    server_name: PROD
+  #  secrets:
+  #    dockerhub_token: ""
+  #    dockerhub_username: ""
+  #    server: ${{ secrets.HOST_PROD }}
+  #    serveur_user: ${{ secrets.USERNAME_PROD }}
+  #    serveur_pwd: ${{ secrets.PASSWORD_PROD }}
+  #    serveur_port: ${{ secrets.PORT_PROD }}
+
+  r7:
+    name: R7
+    needs: build-image
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'develop')
+    #if: ${{ github.ref == 'refs/heads/develop' }}
+    steps:
+      - name: SSH on R7
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_R7 }}
+          username: ${{ secrets.USERNAME_R7 }}
+          password: ${{ secrets.PASSWORD_R7 }}
+          port: ${{ secrets.PORT_R7 }}
+          script: |
+            echo Login
+            echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+            echo Delete image
+            docker rm -f $(docker ps -a | grep squaddev | awk '{print $1}')
+
+            echo Pull image
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:r7
+
+            echo Run new one
+            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:r7
+
+
+  prod:
+    name: PROD
+    needs: build-image
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }} || ${{contains(github.base_ref, 'main')}}
+    steps:
+      - name: SSH on PROD
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ${{ secrets.USERNAME_PROD }}
+          password: ${{ secrets.PASSWORD_PROD }}
+          port: ${{ secrets.PORT_PROD }}
+          script: |
+            echo Login
+            echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+            echo Delete image
+            docker rm -f $(docker ps -a | grep squaddev | awk '{print $1}')
+
+            echo Pull image
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
+
+            echo Run new one
+            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
