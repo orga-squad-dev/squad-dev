@@ -135,7 +135,7 @@ jobs:
 
   build-image:
     name: Build docker image
-    needs: version
+    needs: [version, checkout]
     runs-on: ubuntu-latest
     steps:
 
@@ -198,7 +198,7 @@ jobs:
 
   prod:
     name: PROD
-    needs: [build-image, version]
+    needs: build-image
     runs-on: ubuntu-latest
     steps:
     - name: executing remote ssh commands using password
