@@ -122,11 +122,11 @@ jobs:
           echo *** Branch name *** : ${{ env.branch_name }} / ${{steps.extract_version.outputs.version}}
           if [[ ${{ env.branch_name }} =~ "feature/" || ${{ env.branch_name }} =~ "develop" ]]; then
             #echo "::set-output name=tag::${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}"
-            echo "tag=${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}" >> $GITHUB_ENV
+            echo "TAG=${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}" >> $GITHUB_ENV
           fi
           if [[ ${{ env.branch_name }} == "main" ]]; then
             #echo "::set-output name=tag::${{steps.extract_version.outputs.version}}"
-            echo "tag=${{steps.extract_version.outputs.version}}" >> $GITHUB_ENV
+            echo "TAG=${{steps.extract_version.outputs.version}}" >> $GITHUB_ENV
           fi
         id: image_name
 
@@ -164,7 +164,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:${{ env.TAG}}
 
   prod:
     name: PROD
@@ -187,10 +187,10 @@ jobs:
             docker rm -f $(docker ps -a | grep squaddev | awk '{print $1}')
 
             echo Pull image
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:${{ env.TAG}}
 
             echo Run new one
-            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
+            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:${{ env.TAG}}
 
 
 
