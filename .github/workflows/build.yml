@@ -210,15 +210,26 @@ jobs:
     needs: build-image
     runs-on: ubuntu-latest
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST_PROD }}
-        username: ${{ secrets.USERNAME_PROD }}
-        password: ${{ secrets.PASSWORD_PROD }}
-        port: ${{ secrets.PORT_PROD }}
-        script: |
-          ls -lah
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+            
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ${{ secrets.USERNAME_PROD }}
+          password: ${{ secrets.PASSWORD_PROD }}
+          port: ${{ secrets.PORT_PROD }}
+          script: |
+            echo Pull image
+            docker pull jetenow/squaddev:latest
+            docker run -p 3000:80 -it jetenow/squaddev:latest
+
         #script: |
         #  IMAGE_ID=ghcr.io/${{ github.repository_owner }}/squaddev
 #
