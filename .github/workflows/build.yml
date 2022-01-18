@@ -5,11 +5,8 @@ on:
     branches:
       - main
       - develop
-      - 'features/**'
+
   workflow_dispatch:
-    inputs:
-      existVersion:
-        description: 'Existing version to deploy'
 
 jobs:
 
@@ -188,10 +185,10 @@ jobs:
       - name: SSH on R7
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST_PROD }}
-          username: ${{ secrets.USERNAME_PROD }}
-          password: ${{ secrets.PASSWORD_PROD }}
-          port: ${{ secrets.PORT_PROD }}
+          host: ${{ secrets.HOST_R7 }}
+          username: ${{ secrets.USERNAME_R7 }}
+          password: ${{ secrets.PASSWORD_R7 }}
+          port: ${{ secrets.PORT_R7 }}
           script: |
             echo Login
             echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
