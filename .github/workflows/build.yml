@@ -186,7 +186,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:${{ env.TAG}}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:$(cat MY_ENV_FILE.txt)
 
   prod:
     name: PROD
@@ -200,6 +200,7 @@ jobs:
           path: ./
 
       - run: |
+          cat MY_ENV_FILE.txt
           TAG = $(cat MY_ENV_FILE.txt)
           echo TAG: $TAG
           echo "TAG=$TAG" >> $GITHUB_ENV
@@ -226,10 +227,10 @@ jobs:
             docker rm -f $(docker ps -a | grep squaddev | awk '{print $1}')
 
             echo Pull image
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:${{ env.TAG}}
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:$(cat MY_ENV_FILE.txt)
 
             echo Run new one
-            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:${{ env.TAG}}
+            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:$(cat MY_ENV_FILE.txt)
 
 
 
