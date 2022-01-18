@@ -30,7 +30,6 @@ on:
 jobs:
   prod:
     name: ${{ inputs.server_name }}
-    needs: build-image
     runs-on: ubuntu-latest
     steps:
 
