@@ -163,8 +163,9 @@ jobs:
 
       - name: List files
         run: ls -lah
-        
+
       - run: |
+          cat MY_ENV_FILE.txt
           echo $(cat MY_ENV_FILE.txt) > TAG
           echo TAG: $TAG
           echo "TAG=$TAG" >> $GITHUB_ENV
