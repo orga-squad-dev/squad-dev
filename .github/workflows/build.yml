@@ -76,63 +76,63 @@ jobs:
   #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   #        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  version:
-    name: Bump version
-    needs: checkout
-    runs-on: ubuntu-latest
-    steps:
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: sources
-          path: ./
-      
-      - name: Extract version
-        id: extract_version
-        uses: Saionaro/extract-package-version@v1.0.6
-      - name: Print version
-        run: echo ${{ steps.extract_version.outputs.version }}
-
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
-
-      - name: Test branch_name
-        run: echo ${{ env.branch_name }}
-
-      - name: Feature name
-        run: |
-          if [[ ${{ env.branch_name }} =~ "feature/" ]]; then
-            echo "::set-output name=feature::bug"
-          fi
-          if [[ ${{ env.branch_name }} == "main" ]]; then
-            echo "::set-output name=feature::feature"
-          fi
-        id: feature_name
-
-      - name: Bump release version
-        id: bump_version
-        uses: christian-draeger/increment-semantic-version@1.0.2
-        with:
-          current-version: ${{ steps.extract_version.outputs.version }}
-          version-fragment: ${{ steps.feature_name.outputs.feature }}
-      - name: Do something with your bumped release version
-        run: echo ${{ steps.bump_version.outputs.next-version }} on ${{ steps.extract_branch.outputs.branch }}
-
-      - name: Image name
-        run: |
-          echo *** Branch name *** : ${{ env.branch_name }} / ${{steps.extract_version.outputs.version}}
-          if [[ ${{ env.branch_name }} =~ "feature/" || ${{ env.branch_name }} =~ "develop" ]]; then
-            #echo "::set-output name=tag::${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}"
-            echo "TAG=${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}" >> $GITHUB_ENV
-          fi
-          if [[ ${{ env.branch_name }} == "main" ]]; then
-            #echo "::set-output name=tag::${{steps.extract_version.outputs.version}}"
-            echo "tag=${{steps.extract_version.outputs.version}}" >> $GITHUB_ENV
-          fi
-        id: image_name
+  #version:
+  #  name: Bump version
+  #  needs: checkout
+  #  runs-on: ubuntu-latest
+  #  steps:
+#
+  #    - uses: actions/download-artifact@v2
+  #      with:
+  #        name: sources
+  #        path: ./
+  #    
+  #    - name: Extract version
+  #      id: extract_version
+  #      uses: Saionaro/extract-package-version@v1.0.6
+  #    - name: Print version
+  #      run: echo ${{ steps.extract_version.outputs.version }}
+#
+  #    - name: Extract branch name
+  #      shell: bash
+  #      run: |
+  #        echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+  #      id: extract_branch
+#
+  #    - name: Test branch_name
+  #      run: echo ${{ env.branch_name }}
+#
+  #    - name: Feature name
+  #      run: |
+  #        if [[ ${{ env.branch_name }} =~ "feature/" ]]; then
+  #          echo "::set-output name=feature::bug"
+  #        fi
+  #        if [[ ${{ env.branch_name }} == "main" ]]; then
+  #          echo "::set-output name=feature::feature"
+  #        fi
+  #      id: feature_name
+#
+  #    - name: Bump release version
+  #      id: bump_version
+  #      uses: christian-draeger/increment-semantic-version@1.0.2
+  #      with:
+  #        current-version: ${{ steps.extract_version.outputs.version }}
+  #        version-fragment: ${{ steps.feature_name.outputs.feature }}
+  #    - name: Do something with your bumped release version
+  #      run: echo ${{ steps.bump_version.outputs.next-version }} on ${{ steps.extract_branch.outputs.branch }}
+#
+  #    - name: Image name
+  #      run: |
+  #        echo *** Branch name *** : ${{ env.branch_name }} / ${{steps.extract_version.outputs.version}}
+  #        if [[ ${{ env.branch_name }} =~ "feature/" || ${{ env.branch_name }} =~ "develop" ]]; then
+  #          #echo "::set-output name=tag::${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}"
+  #          echo "TAG=${steps.extract_version.outputs.version}-${steps.extract_branch.outputs.branch}" >> $GITHUB_ENV
+  #        fi
+  #        if [[ ${{ env.branch_name }} == "main" ]]; then
+  #          #echo "::set-output name=tag::${{steps.extract_version.outputs.version}}"
+  #          echo "tag=${{steps.extract_version.outputs.version}}" >> $GITHUB_ENV
+  #        fi
+  #      id: image_name
 
   build-image:
     name: Build docker image
@@ -155,19 +155,62 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Determine tag
+        run: |
+          if [[ ${{ env.branch_name }} =~ "develop" ]]; then
+            echo "::set-output name=tag::r7"
+          fi
+          if [[ ${{ env.branch_name }} == "main" ]]; then
+            echo "::set-output name=tag::latest"
+          fi
+        id: tag_name
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:${{ steps.tag_name.outputs.tag }}
+
+  r7:
+    name: R7
+    needs: build-image
+    runs-on: ubuntu-latest
+    if: contains(github.ref, "develop")
+    steps:
+      - name: SSH on R7
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ${{ secrets.USERNAME_PROD }}
+          password: ${{ secrets.PASSWORD_PROD }}
+          port: ${{ secrets.PORT_PROD }}
+          script: |
+            echo Login
+            echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+            echo Delete image
+            docker rm -f $(docker ps -a | grep squaddev | awk '{print $1}')
+
+            echo Pull image
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:r7
+
+            echo Run new one
+            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:r7
+
 
   prod:
     name: PROD
     needs: build-image
     runs-on: ubuntu-latest
+    if: contains(github.ref, "main")
     steps:
-
       - name: SSH on PROD
         uses: appleboy/ssh-action@master
         with:
