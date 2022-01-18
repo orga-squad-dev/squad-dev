@@ -24,8 +24,6 @@ jobs:
         with:
           name: sources
           path: ./
-
-      - run: echo ${{ github.repository_owner }} - ${{ github.repository }} - ${{ github.project_id }}
     
   build:
     name: Create build
@@ -92,7 +90,6 @@ jobs:
       - name: Extract version
         id: extract_version
         uses: Saionaro/extract-package-version@v1.0.6
-      # From now you can access the version
       - name: Print version
         run: echo ${{ steps.extract_version.outputs.version }}
 
@@ -134,20 +131,8 @@ jobs:
           if [[ ${{ env.branch_name }} == "main" ]]; then
             #echo "::set-output name=tag::${{steps.extract_version.outputs.version}}"
             echo "tag=${{steps.extract_version.outputs.version}}" >> $GITHUB_ENV
-            echo ${{steps.extract_version.outputs.version}} >> MY_ENV_FILE.txt
           fi
-
-          echo MY_ENV_FILE
-          cat MY_ENV_FILE.txt
         id: image_name
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: sources
-          path: ./
-
-      #- name: Image name
-      #  run: echo ${{ steps.feature_name.outputs.feature }} - ${{ steps.tag_name.outputs.tag }}
 
   build-image:
     name: Build docker image
@@ -164,18 +149,6 @@ jobs:
       - name: List files
         run: ls -lah
 
-      - run: |
-          cat MY_ENV_FILE.txt
-          #echo $(cat MY_ENV_FILE.txt) > TAG
-          TAG = $(cat MY_ENV_FILE.txt)
-          echo TAG: $TAG
-          echo "TAG=$TAG" >> $GITHUB_ENV
-
-      #- name: Rebuild sources
-      #  run: |
-      #    npm install
-      #    npm run build
-      
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -187,31 +160,13 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:$(cat MY_ENV_FILE.txt)
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
 
   prod:
     name: PROD
     needs: build-image
     runs-on: ubuntu-latest
     steps:
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: sources
-          path: ./
-
-      - run: |
-          cat MY_ENV_FILE.txt
-          TAG = $(cat MY_ENV_FILE.txt)
-          echo TAG: $TAG
-          echo "TAG=$TAG" >> $GITHUB_ENV
-
-      #- run: |
-      #    TAG = ""
-      #    echo MY_ENV_FILE
-      #    cat MY_ENV_FILE.txt > TAG
-      #    echo TAG: $TAG
-      #    echo "TAG=${{$TAG}}" >> $GITHUB_ENV
 
       - name: SSH on PROD
         uses: appleboy/ssh-action@master
@@ -228,12 +183,7 @@ jobs:
             docker rm -f $(docker ps -a | grep squaddev | awk '{print $1}')
 
             echo Pull image
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:$(cat MY_ENV_FILE.txt)
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
 
             echo Run new one
-            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:$(cat MY_ENV_FILE.txt)
-
-
-
-
-    
+            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
