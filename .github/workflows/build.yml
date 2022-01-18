@@ -144,6 +144,10 @@ jobs:
           name: sources
           path: ./
 
+      
+      - name: List files
+        run: ls -lah
+
       #- name: docker login
       #  env:
       #    DOCKER_USER: ${{ secrets.DOCKER_USER }}
