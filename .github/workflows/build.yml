@@ -151,6 +151,7 @@ jobs:
       - run: |
           TAG = $(cat MY_ENV_FILE.txt)
           echo TAG: $TAG
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - uses: actions/download-artifact@v2
         with:
@@ -185,11 +186,16 @@ jobs:
     steps:
 
       - run: |
-          TAG = ""
-          echo MY_ENV_FILE
-          cat MY_ENV_FILE.txt > TAG
+          TAG = $(cat MY_ENV_FILE.txt)
           echo TAG: $TAG
-          echo "TAG=${{$TAG}}" >> $GITHUB_ENV
+          echo "TAG=$TAG" >> $GITHUB_ENV
+
+      #- run: |
+      #    TAG = ""
+      #    echo MY_ENV_FILE
+      #    cat MY_ENV_FILE.txt > TAG
+      #    echo TAG: $TAG
+      #    echo "TAG=${{$TAG}}" >> $GITHUB_ENV
 
       - name: SSH on PROD
         uses: appleboy/ssh-action@master
