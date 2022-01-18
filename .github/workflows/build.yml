@@ -182,7 +182,8 @@ jobs:
     name: R7
     needs: build-image
     runs-on: ubuntu-latest
-    if: contains(github.ref, "develop")
+    #if: contains(github.ref, "develop")
+    if: ${{ github.ref == 'refs/heads/develop' }}
     steps:
       - name: SSH on R7
         uses: appleboy/ssh-action@master
@@ -209,7 +210,7 @@ jobs:
     name: PROD
     needs: build-image
     runs-on: ubuntu-latest
-    if: contains(github.ref, "main")
+    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: SSH on PROD
         uses: appleboy/ssh-action@master
