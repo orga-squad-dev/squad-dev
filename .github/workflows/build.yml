@@ -14,14 +14,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: sources
+          path: ./
+
   build:
     name: Create build
     needs: checkout
     runs-on: ubuntu-latest
     steps: 
 
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: sources
+          path: ./
 
       - name: Setup node
         uses: actions/setup-node@v2
