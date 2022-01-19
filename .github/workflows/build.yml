@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  checkout:
+    nom: Get sources
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+  build:
+    name: Create build
+    needs: checkout
+    runs-on: ubuntu-latest
+    steps: 
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - run: npm install
+      - run: npm test
