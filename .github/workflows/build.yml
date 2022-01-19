@@ -132,7 +132,8 @@ jobs:
 
   build-image:
     name: Build docker image
-    if: ${{ always() }}
+    #if: ${{ always() }}
+    if: ${{ !failure() }}
     needs: [build]
     runs-on: ubuntu-latest
     steps:
