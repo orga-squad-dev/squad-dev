@@ -92,6 +92,33 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:${{ steps.tag_name.outputs.tag }}
 
+  r7:
+    name: R7
+    needs: build-image
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'develop')
+    #if: ${{ github.ref == 'refs/heads/develop' }}
+    steps:
+      - name: SSH on R7
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_R7 }}
+          username: ${{ secrets.USERNAME_R7 }}
+          password: ${{ secrets.PASSWORD_R7 }}
+          port: ${{ secrets.PORT_R7 }}
+          script: |
+            echo Login
+            echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+            echo Delete image
+            docker rm -f $(docker ps -a | grep squaddev | awk '{print $1}')
+
+            echo Pull image
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:r7
+
+            echo Run new one
+            docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:r7
+            
   prod:
     name: PROD
     needs: build-image
