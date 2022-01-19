@@ -8,7 +8,7 @@ on:
 jobs:
 
   checkout:
-    nom: Get sources
+    name: Get sources
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
