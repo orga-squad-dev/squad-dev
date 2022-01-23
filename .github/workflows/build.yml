@@ -97,7 +97,7 @@ jobs:
     name: R7
     needs: build-image
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'develop')
+    if: contains(github.ref, 'develop') || contains(github.base_ref, 'develop')
     #if: ${{ github.ref == 'refs/heads/develop' }}
     steps:
       - name: SSH on R7
@@ -124,7 +124,7 @@ jobs:
     name: PROD
     needs: build-image
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }} || ${{contains(github.base_ref, 'main')}}
+    if: contains(github.ref, 'main') || contains(github.base_ref, 'main')
     steps:
       - name: SSH on PROD
         uses: appleboy/ssh-action@master
@@ -147,7 +147,8 @@ jobs:
             docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
 
   deploy-R7:
-    if: contains(github.ref, 'develop')
+    needs: build-image
+    if: contains(github.ref, 'develop') || contains(github.base_ref, 'develop')
     uses: orga-squad-dev/reusable-template/.github/workflows/ssh-pull-run-docker.yml@main
     with:
       image_name: squaddev
@@ -160,7 +161,8 @@ jobs:
       serveur_port: ${{ secrets.PORT_R7 }}
 
   deploy-prod:
-    if: contains(github.ref, 'main')
+    needs: build-image
+    if: contains(github.ref, 'main') || contains(github.base_ref, 'main')
     uses: orga-squad-dev/reusable-template/.github/workflows/ssh-pull-run-docker.yml@main
     with:
       image_name: squaddev
