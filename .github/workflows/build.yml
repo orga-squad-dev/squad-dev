@@ -153,7 +153,7 @@ jobs:
     with:
       image_name: squaddev
       image_tag: r7
-      server_name: PROD
+      server_name: R7
     secrets:
       server: ${{ secrets.HOST_R7 }}
       serveur_user: ${{ secrets.USERNAME_R7 }}
