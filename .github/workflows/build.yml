@@ -157,6 +157,8 @@ jobs:
       image_tag: r7
       server_name: R7
     secrets:
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+      dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
       server: ${{ secrets.HOST_R7 }}
       serveur_user: ${{ secrets.USERNAME_R7 }}
       serveur_pwd: ${{ secrets.PASSWORD_R7 }}
@@ -171,6 +173,8 @@ jobs:
       image_tag: latest
       server_name: PROD
     secrets:
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+      dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
       server: ${{ secrets.HOST_PROD }}
       serveur_user: ${{ secrets.USERNAME_PROD }}
       serveur_pwd: ${{ secrets.PASSWORD_PROD }}
