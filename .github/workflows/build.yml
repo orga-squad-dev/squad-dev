@@ -145,3 +145,29 @@ jobs:
 
             echo Run new one
             docker run -d -p 3000:80 --name squaddev ${{ secrets.DOCKERHUB_USERNAME }}/squaddev:latest
+
+  deploy-R7:
+    if: contains(github.ref, 'develop')
+    uses: orga-squad-dev/reusable-template/.github/workflows/ssh-pull-run-docker.yml@main
+    with:
+      image_name: squaddev
+      image_tag: r7
+      server_name: PROD
+    secrets:
+      server: ${{ secrets.HOST_R7 }}
+      serveur_user: ${{ secrets.USERNAME_R7 }}
+      serveur_pwd: ${{ secrets.PASSWORD_R7 }}
+      serveur_port: ${{ secrets.PORT_R7 }}
+
+  deploy-prod:
+    if: contains(github.ref, 'main')
+    uses: orga-squad-dev/reusable-template/.github/workflows/ssh-pull-run-docker.yml@main
+    with:
+      image_name: squaddev
+      image_tag: latest
+      server_name: PROD
+    secrets:
+      server: ${{ secrets.HOST_PROD }}
+      serveur_user: ${{ secrets.USERNAME_PROD }}
+      serveur_pwd: ${{ secrets.PASSWORD_PROD }}
+      serveur_port: ${{ secrets.PORT_PROD }}
